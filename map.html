@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUẬN PHÚ NHUẬN</title>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/> -->
+    <!-- <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin="">
+    </script> -->
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <style>
+        #map { height: 600px; }
+        .topright {
+            position: absolute;
+            top: 8px;
+            right: 16px;
+            font-size: 18px;
+        }
+    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body data-rsssl=1>
+    <h1>BẢN ĐỒ HÀNH CHÍNH QUẬN PHÚ NHUẬN</h1>
+    <img src="logo.png" alt="logo" width="200" height="100" style="z-index:100; position: fixed; right: 10px;">
+    <div id="map" style="z-index: 2;"></div>
+
+    <div id="output"></div>
+     <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+        
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Modal Header</h4>
+                </div>
+                <div class="modal-body">
+                    <img id="my_image" class="img-thumbnail">
+                    <a id="my_link" target="_blank">Xem trên Google map</a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        
+        </div>
+    </div>
+    <script>
+        var map = L.map('map');
+        map.setView([10.8008,106.6794], 14);
+
+        googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+            maxZoom: 20,
+            subdomains:['mt0','mt1','mt2','mt3']
+        });
+        googleStreets.addTo(map);
+
+        let marker, circle, zoomed;
+        var mapPlace = {
+            "Phường 1":[[10.79865,106.68266],"https://nasaland.vn/wp-content/uploads/2022/09/Quan-10-1.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+1,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7649791,106.675288,17z/data=!3m1!4b1!4m6!3m5!1s0x31752f1e4706c23b:0xb8c210545bf7d1f0!8m2!3d10.7652375!4d106.677029!16s%2Fg%2F155s3_z0?entry=ttu"],
+            "Phường 2": [[10.7981,106.6860],"https://cafethietke.com/upload/news/phuong-17-quan-phu-nhuan-5731.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+2,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7633734,106.6717679,16z/data=!3m1!4b1!4m6!3m5!1s0x31752ee1616fb177:0x5070e4826c1f63f8!8m2!3d10.7640383!4d106.6740811!16s%2Fg%2F155r277q?entry=ttu"],
+            "Phường 3": [[10.80234,106.68146],"https://nasaland.vn/wp-content/uploads/2022/09/Quan-10-3.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+4,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7630365,106.6673529,17z/data=!3m1!4b1!4m6!3m5!1s0x31752ee403efc949:0xabad11496753786!8m2!3d10.76292!4d106.6696593!16s%2Fg%2F155qjprr?entry=ttu"],
+            "Phường 4": [[10.8075,106.6792],"https://nasaland.vn/wp-content/uploads/2022/09/Quan-10-3.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+4,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7630365,106.6673529,17z/data=!3m1!4b1!4m6!3m5!1s0x31752ee403efc949:0xabad11496753786!8m2!3d10.76292!4d106.6696593!16s%2Fg%2F155qjprr?entry=ttu"],
+            "Phường 5": [[10.8058,106.6838],"https://nasaland.vn/wp-content/uploads/2022/09/Quan-10-1.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+5,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7630365,106.6673529,17z/data=!4m6!3m5!1s0x31752ee599116a4b:0x4e7e7f058aef8fe1!8m2!3d10.7617206!4d106.6667115!16s%2Fg%2F155qr187?entry=ttu"],
+            "Phường 7": [[10.80074,106.68855],"https://nasaland.vn/wp-content/uploads/2022/09/Quan-10-3.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+7,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7615769,106.6587544,17z/data=!3m1!4b1!4m6!3m5!1s0x31752eeefe605c53:0xf173fe1e4327f66f!8m2!3d10.7602821!4d106.6619214!16s%2Fg%2F155r2pgs?entry=ttu"],
+            "Phường 8": [[10.79804,106.67467],"https://nasaland.vn/wp-content/uploads/2022/09/Quan-10-1.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+8,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7649365,106.6633474,17z/data=!3m1!4b1!4m6!3m5!1s0x31752ee643a27aa1:0xf337ad0cfa59db5!8m2!3d10.7645241!4d106.6652376!16s%2Fg%2F155pwlql?entry=ttu"],
+            "Phường 9": [[10.8009,106.6795],"https://nasaland.vn/wp-content/uploads/2022/09/Quan-10-3.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+9,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7649365,106.6633474,17z/data=!4m6!3m5!1s0x31752ee0d21b1707:0xf4a1577984b8f77a!8m2!3d10.7672178!4d106.6707888!16s%2Fg%2F155phy75?entry=ttu"],
+            "Phường 10": [[10.7952,106.6713],"https://nasaland.vn/wp-content/uploads/2022/09/Quan-10-3.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+10+(Qu%E1%BA%ADn+10),+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7724535,106.6644759,16z/data=!3m1!4b1!4m6!3m5!1s0x31752ede4fa592a1:0x49c4a13f5c8a408f!8m2!3d10.772517!4d106.6678918!16s%2Fg%2F155q41dr?entry=ttu"],
+            "Phường 11": [[10.79253,106.67616],"https://nasaland.vn/wp-content/uploads/2022/09/Quan-10-1.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+11,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7736831,106.6729965,16z/data=!3m1!4b1!4m6!3m5!1s0x31752f20cc9207e5:0x6cecd31114d469a6!8m2!3d10.7736443!4d106.6788715!16s%2Fg%2F155pjm3n?entry=ttu"],
+            "Phường 13": [[10.79100,106.66931],"https://nasaland.vn/wp-content/uploads/2022/09/Quan-10-1.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+13,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7790598,106.6656825,16z/data=!3m1!4b1!4m6!3m5!1s0x31752ed9fb97ba8b:0xf9445853f6652529!8m2!3d10.7792565!4d106.6696593!16s%2Fg%2F155stpjp?entry=ttu"],
+            "Phường 15": [[10.79628,106.67963],"phuong15.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+15,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.77309,106.6515719,15z/data=!4m6!3m5!1s0x31752ece17e45f0f:0xf606574179f9901b!8m2!3d10.7815015!4d106.6659746!16s%2Fg%2F155sng0f?entry=ttu"],
+            "Phường 17": [[10.79356,106.68256],"phuong15.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+15,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.77309,106.6515719,15z/data=!4m6!3m5!1s0x31752ece17e45f0f:0xf606574179f9901b!8m2!3d10.7815015!4d106.6659746!16s%2Fg%2F155sng0f?entry=ttu"],
+        };
+        var popup = L.popup();
+
+        Object.keys(mapPlace).forEach(key=>{
+                marker = L.marker(mapPlace[key][0]).addTo(map);
+                marker.bindPopup(key);
+                marker.setPopupContent("<h6>"+key+"<h6><img src='"+mapPlace[key][1]+"' alt='quan 10' width='60' height='60' data-toggle='modal' data-target='#myModal' data-whatever='"+key+"' onclick='openModal(`"+key+"`)'> ");
+                L.circle(mapPlace[key][0],{radius:30}).addTo(map);
+        })
+
+        function openModal(event){
+            console.log("hello"+event);
+        }
+      
+
+        $('#myModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget)
+            var recipient = button.data('whatever') // Extract info from data-* attributes
+            var modal = $(this)
+            modal.find('.modal-title').text('Đây là ' + recipient)
+            $('#my_image').attr('src',mapPlace[recipient][1]);
+            $('#my_link').attr('href',mapPlace[recipient][2]);
+        })
+    </script>
+  
+</body>
+</html>
