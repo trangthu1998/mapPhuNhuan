@@ -16,6 +16,7 @@
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css">
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
     <style>
@@ -37,7 +38,12 @@
     <h1>BẢN ĐỒ HÀNH CHÍNH QUẬN PHÚ NHUẬN</h1>
     <img src="logo.png" alt="logo" width="200" height="100" style="z-index:100; position: fixed; right: 10px;">
     <div id="map" style="z-index: 2;"></div>
-
+    <div class="list-group" id="myListGroup">
+        <a class="list-group-item list-group-item-action" onclick='resetLocation()'>
+            <img src="folder.png" height="35"/>
+            <i class="fa-regular fa-folder">Quận Phú Nhuận</i>
+        </a>
+    </div>
     <div id="output"></div>
      <!-- Modal -->
     <div class="modal fade" id="myModal" role="dialog">
@@ -72,7 +78,7 @@
 
         let marker, circle, zoomed;
         var mapPlace = {
-            "Phường 1":[[10.79865,106.68266],"https://nasaland.vn/wp-content/uploads/2022/09/Quan-10-1.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+1,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7649791,106.675288,17z/data=!3m1!4b1!4m6!3m5!1s0x31752f1e4706c23b:0xb8c210545bf7d1f0!8m2!3d10.7652375!4d106.677029!16s%2Fg%2F155s3_z0?entry=ttu"],
+            "Phường 1":[[10.79865,106.68266],"phuong2.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+1,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7649791,106.675288,17z/data=!3m1!4b1!4m6!3m5!1s0x31752f1e4706c23b:0xb8c210545bf7d1f0!8m2!3d10.7652375!4d106.677029!16s%2Fg%2F155s3_z0?entry=ttu"],
             "Phường 2": [[10.7981,106.6860],"https://cafethietke.com/upload/news/phuong-17-quan-phu-nhuan-5731.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+2,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7633734,106.6717679,16z/data=!3m1!4b1!4m6!3m5!1s0x31752ee1616fb177:0x5070e4826c1f63f8!8m2!3d10.7640383!4d106.6740811!16s%2Fg%2F155r277q?entry=ttu"],
             "Phường 3": [[10.80234,106.68146],"https://nasaland.vn/wp-content/uploads/2022/09/Quan-10-3.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+4,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7630365,106.6673529,17z/data=!3m1!4b1!4m6!3m5!1s0x31752ee403efc949:0xabad11496753786!8m2!3d10.76292!4d106.6696593!16s%2Fg%2F155qjprr?entry=ttu"],
             "Phường 4": [[10.8075,106.6792],"https://nasaland.vn/wp-content/uploads/2022/09/Quan-10-3.jpg","https://www.google.com/maps/place/Ph%C6%B0%E1%BB%9Dng+4,+District+10,+Ho+Chi+Minh+City,+Vietnam/@10.7630365,106.6673529,17z/data=!3m1!4b1!4m6!3m5!1s0x31752ee403efc949:0xabad11496753786!8m2!3d10.76292!4d106.6696593!16s%2Fg%2F155qjprr?entry=ttu"],
@@ -93,12 +99,22 @@
                 marker.bindPopup(key);
                 marker.setPopupContent("<h6>"+key+"<h6><img src='"+mapPlace[key][1]+"' alt='quan 10' width='60' height='60' data-toggle='modal' data-target='#myModal' data-whatever='"+key+"' onclick='openModal(`"+key+"`)'> ");
                 L.circle(mapPlace[key][0],{radius:30}).addTo(map);
+                $('#myListGroup').append("<a class='list-group-item list-group-item-action' onclick='getLocation(`"+mapPlace[key][0]+"`)'><img src='folder.png' height='35'/><i class='fa-regular fa-folder'>"+key+"</i></a>");
         })
 
         function openModal(event){
             console.log("hello"+event);
         }
-      
+        
+        function getLocation(event){
+            postition = event.split(",");
+            map.setView([postition[0],postition[1]], 20);
+        }
+
+        function resetLocation(){
+            map.setView([10.8008,106.6794], 14);
+        }
+        
 
         $('#myModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget)
